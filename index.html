@@ -139,10 +139,49 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
 .print{background:#111;color:#fff;}
 .clear{background:#ccc;}
 .bill-qty-btn{padding:2px 6px; margin:0 2px; border:none; border-radius:4px; background:#e76f00; color:#fff; cursor:pointer;}
-@media(max-width:1024px){.grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:768px){.grid{grid-template-columns:1fr;}}
-@media(max-width:480px){header{flex-direction:column;align-items:flex-start;}}
-@media print{header,.menu,.section,button,input,select,footer{display:none!important;}.bill{width:80mm;margin:auto;box-shadow:none;text-align:center;}td,th{text-align:center;}td.item{text-align:left;}}
+/* Bottom two column section */
+.bottom-section{
+  padding:16px;
+  margin-top:20px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+  background:var(--card);
+}
+.bottom-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.left-col h4, .right-col h4{margin-bottom:10px; text-align:center;}
+.image-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.image-grid img{
+  width:100%;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+@media(max-width:768px){
+  .grid{grid-template-columns:1fr;}
+  .bottom-grid{grid-template-columns:1fr;}
+  .image-grid{grid-template-columns:repeat(2,1fr);}
+}
+footer{
+  text-align:center;
+  padding:12px 16px;
+  font-size:12px;
+  background: rgba(0,0,0,0.6);
+  color:#fff;
+  position:relative;
+  width: 100%;
+  backdrop-filter: blur(10px);
+  border-top-left-radius:12px;
+  border-top-right-radius:12px;
+  margin-top:20px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+}
 </style>
 </head>
 <body>
@@ -155,12 +194,14 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
 <div class="container">
 <div class="grid">
 
+<!-- Menu Card -->
 <div class="card menu" id="menuCard">
   <h3>Menu</h3>
   <div class="category-menu" id="categories"></div>
   <div id="menu"></div>
 </div>
 
+<!-- Bill Card -->
 <div class="card bill">
   <div class="bill-header">
     <img src="logo.png" alt="Logo">
@@ -236,6 +277,30 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
   <button class="action print" onclick="shareWhatsApp()">WhatsApp</button>
   <button class="action clear" onclick="clearBill()">Clear</button>
 </div>
+
+<!-- Bottom two columns -->
+<div class="card bottom-section">
+  <div class="bottom-grid">
+    <div class="left-col">
+      <h4>History</h4>
+      <div id="historyList" style="max-height:200px; overflow:auto;">
+        <p>No orders yet</p>
+      </div>
+    </div>
+    <div class="right-col">
+      <h4>Gallery</h4>
+      <div class="image-grid">
+        <img src="png1.png" alt="png1">
+        <img src="png2.png" alt="png2">
+        <img src="png3.png" alt="png3">
+        <img src="png4.png" alt="png4">
+        <img src="png5.png" alt="png5">
+        <img src="png6.png" alt="png6">
+      </div>
+    </div>
+  </div>
+</div>
+
 </div>
 </div>
 
@@ -264,10 +329,10 @@ const total = document.getElementById("total");
 const tokenNo = document.getElementById("tokenNo");
 const menu = document.getElementById("menu");
 const categories = document.getElementById("categories");
+const historyList = document.getElementById("historyList");
 
 let token = Number(localStorage.getItem("token")) || 0;
 let cart = {}, deliveryCharge = 0;
-
 let menuData={
 "Rice & Pasta":[["Fried Rice Veg",200],["Fried Rice Chicken",250],["Chilli Chicken",250],["Chow Mein",250],["Alfredo",350],["Lasagne",500]],
 "Burgers":[["Bun Kabab",100],["Anday Wala Burger",150],["Zinger Breast",300],["Zinger Breast Cheese",350],["Zinger Thigh",350],["Zinger Thigh Cheese",400]],
@@ -348,27 +413,99 @@ function renderBill(){
 
   billCustName.innerText = custName.value || "-";
   billCustPhone.innerText = custPhone.value || "-";
-  billCustAddress.innerText = custAddress.value || "-";
-  billOrderType.innerText = orderType.value || "-";
-  billPayment.innerText = paymentMethod.value || "-";
-  tokenNo.innerText = token;
+  billCustAddress.innerText =billCustAddress.innerText = custAddress.value || "-";  
+  billOrderType.innerText = orderType.value || "-";  
+  billPayment.innerText = paymentMethod.value || "-";  
+  tokenNo.innerText = token;  
 }
 
-function updateQty(item, change){
-  if(cart[item]){
-    cart[item].qty += change;
-    if(cart[item].qty <= 0) delete cart[item];
+function updateQty(name, change){
+  if(cart[name]){
+    cart[name].qty += change;
+    if(cart[name].qty <= 0) delete cart[name];
     renderBill();
     renderMenu();
   }
 }
 
-function setDelivery(v,b){deliveryCharge=v; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); customDelivery.value=""; renderBill();}
-function applyCustomDelivery(){deliveryCharge=Number(customDelivery.value)||0; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); renderBill();}
-function applyCustomToken(){let val=Number(customToken.value); if(!isNaN(val)&&val>=0){token=val; localStorage.setItem("token",token); renderBill();}}
-function printBill(){renderBill(); window.print(); token++; localStorage.setItem("token",token); clearBill();}
-function shareWhatsApp(){let msg=`Snacknest Kitchen\nToken #${token}\nCustomer: ${custName.value}\nPhone: ${custPhone.value}\nAddress: ${custAddress.value}\nOrder: ${orderType.value}\nPayment: ${paymentMethod.value}\n\n`; let s=0; for(let n in cart){let i=cart[n]; s+=i.qty*i.price; msg+=`${n} x ${i.qty} = ${i.qty*i.price}\n`;} msg+=`\nDelivery: ${deliveryCharge}\nTOTAL: ${s+deliveryCharge}\nThank You!`; window.open("https://wa.me/?text="+encodeURIComponent(msg));}
-function clearBill(){cart={};deliveryCharge=0;custName.value="";custPhone.value="";custAddress.value="";customDelivery.value=""; renderBill(); renderMenu();}
+function setDelivery(v,b){
+  deliveryCharge=v;
+  document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  customDelivery.value="";
+  renderBill();
+}
+
+function applyCustomDelivery(){
+  deliveryCharge=Number(customDelivery.value)||0;
+  document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));
+  renderBill();
+}
+
+function applyCustomToken(){
+  let val=Number(customToken.value);
+  if(!isNaN(val)&&val>=0){
+    token=val;
+    localStorage.setItem("token",token);
+    renderBill();
+  }
+}
+
+function printBill(){
+  renderBill();
+  window.print();
+  saveHistory();
+  token++;
+  localStorage.setItem("token",token);
+  clearBill();
+}
+
+function shareWhatsApp(){
+  let msg=`Snacknest Kitchen\nToken #${token}\nCustomer: ${custName.value}\nPhone: ${custPhone.value}\nAddress: ${custAddress.value}\nOrder: ${orderType.value}\nPayment: ${paymentMethod.value}\n\n`; 
+  let s=0;
+  for(let n in cart){let i=cart[n]; s+=i.qty*i.price; msg+=`${n} x ${i.qty} = ${i.qty*i.price}\n`;}
+  msg+=`\nDelivery: ${deliveryCharge}\nTOTAL: ${s+deliveryCharge}\nThank You!`;
+  window.open("https://wa.me/?text="+encodeURIComponent(msg));
+}
+
+function clearBill(){
+  cart={};
+  deliveryCharge=0;
+  custName.value="";
+  custPhone.value="";
+  custAddress.value="";
+  customDelivery.value="";
+  renderBill();
+  renderMenu();
+}
+
+function saveHistory(){
+  let h = JSON.parse(localStorage.getItem("history")||"[]");
+  h.unshift({
+    token: token,
+    customer: custName.value||"-",
+    total: total.innerText,
+    date: new Date().toLocaleString()
+  });
+  if(h.length>10) h.pop();
+  localStorage.setItem("history",JSON.stringify(h));
+  renderHistory();
+}
+
+function renderHistory(){
+  let h = JSON.parse(localStorage.getItem("history")||"[]");
+  if(h.length===0){historyList.innerHTML="<p>No orders yet</p>"; return;}
+  historyList.innerHTML = h.map(x=>`<p>Token #${x.token} | ${x.customer} | Total: ${x.total} | ${x.date}</p>`).join("");
+}
+
+window.onload = ()=>{
+  renderCategories();
+  renderMenu();
+  updateDateTime();
+  renderBill();
+  renderHistory();
+};
+setInterval(updateDateTime,1000);
 </script>
 
 </body>
