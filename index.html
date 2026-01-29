@@ -139,23 +139,50 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
 .print{background:#111;color:#fff;}
 .clear{background:#ccc;}
 .bill-qty-btn{padding:2px 6px; margin:0 2px; border:none; border-radius:4px; background:#e76f00; color:#fff; cursor:pointer;}
-/* Bottom two column section */
+
+/* Bottom switch section */
 .bottom-section{
-  padding:16px;
   margin-top:20px;
-  border-radius:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-  background:var(--card);
 }
-.bottom-grid{
+.bottom-switch-buttons{
+  display:flex;
+  gap:10px;
+  margin-bottom:12px;
+}
+.bottom-switch-buttons button{
+  flex:1;
+  border:none;
+  padding:8px;
+  border-radius:8px;
+  background:#ddd;
+  font-weight:600;
+  cursor:pointer;
+  transition: all 0.3s;
+}
+.bottom-switch-buttons button.active{
+  background:var(--primary);
+  color:#fff;
+}
+.bottom-cards{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:16px;
 }
-.left-col h4, .right-col h4{margin-bottom:10px; text-align:center;}
+.bottom-card{
+  background:var(--card);
+  border-radius:16px;
+  padding:16px;
+  max-height:250px;
+  overflow:auto;
+  opacity:0;
+  transition: opacity 0.3s ease;
+}
+.bottom-card.active{
+  opacity:1;
+}
 .image-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:1fr 1fr;
   gap:8px;
 }
 .image-grid img{
@@ -165,8 +192,8 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
 }
 @media(max-width:768px){
   .grid{grid-template-columns:1fr;}
-  .bottom-grid{grid-template-columns:1fr;}
-  .image-grid{grid-template-columns:repeat(2,1fr);}
+  .bottom-cards{grid-template-columns:1fr;}
+  .image-grid{grid-template-columns:1fr 1fr;}
 }
 footer{
   text-align:center;
@@ -278,16 +305,20 @@ footer{
   <button class="action clear" onclick="clearBill()">Clear</button>
 </div>
 
-<!-- Bottom two columns -->
-<div class="card bottom-section">
-  <div class="bottom-grid">
-    <div class="left-col">
+<!-- Bottom section switch -->
+<div class="bottom-section">
+  <div class="bottom-switch-buttons">
+    <button id="btnHistory" class="active" onclick="switchBottom('history')">History</button>
+    <button id="btnGallery" onclick="switchBottom('gallery')">Gallery</button>
+  </div>
+  <div class="bottom-cards">
+    <div id="bottomHistory" class="bottom-card active">
       <h4>History</h4>
       <div id="historyList" style="max-height:200px; overflow:auto;">
         <p>No orders yet</p>
       </div>
     </div>
-    <div class="right-col">
+    <div id="bottomGallery" class="bottom-card">
       <h4>Gallery</h4>
       <div class="image-grid">
         <img src="png1.png" alt="png1">
@@ -307,6 +338,7 @@ footer{
 <footer>Powered by <b>Ghufran Tech</b></footer>
 
 <script>
+// ---------------- Variables ----------------
 const custName = document.getElementById("custName");
 const custPhone = document.getElementById("custPhone");
 const custAddress = document.getElementById("custAddress");
@@ -330,6 +362,10 @@ const tokenNo = document.getElementById("tokenNo");
 const menu = document.getElementById("menu");
 const categories = document.getElementById("categories");
 const historyList = document.getElementById("historyList");
+const bottomHistory = document.getElementById("bottomHistory");
+const bottomGallery = document.getElementById("bottomGallery");
+const btnHistory = document.getElementById("btnHistory");
+const btnGallery = document.getElementById("btnGallery");
 
 let token = Number(localStorage.getItem("token")) || 0;
 let cart = {}, deliveryCharge = 0;
@@ -342,148 +378,27 @@ let menuData={
 };
 let currentCategory = Object.keys(menuData)[0];
 
-window.onload = ()=>{
-  renderCategories();
-  renderMenu();
-  updateDateTime();
-  renderBill();
-};
-setInterval(updateDateTime,1000);
-
-function updateDateTime(){billDate.innerText=new Date().toLocaleString();}
-function toggleTheme(){document.body.classList.toggle("dark");}
-
-function renderCategories(){
-  categories.innerHTML="";
-  Object.keys(menuData).forEach(c=>{
-    let b=document.createElement("button");
-    b.innerText=c;
-    if(c===currentCategory)b.classList.add("active");
-    b.onclick=()=>{
-      currentCategory=c;
-      renderCategories();
-      renderMenu();
-    };
-    categories.appendChild(b);
-  });
-}
-
-function renderMenu(){
-  menu.classList.remove("fade-in"); 
-  menu.classList.add("fade-out");
-  setTimeout(()=>{
-    menu.innerHTML="";
-    menuData[currentCategory].forEach((item,index)=>{
-      let q = cart[item[0]]?.qty || 0;
-      let itemDiv = document.createElement("div");
-      itemDiv.className = "menu-item";
-      itemDiv.innerHTML = `<span>${item[0]} - PKR ${item[1]}</span>
-      <button onclick="addItem('${item[0]}',${item[1]})">Add ${q ? `<span class="badge">${q}</span>` : ""}</button>`;
-      menu.appendChild(itemDiv);
-    });
-    menu.classList.remove("fade-out"); 
-    menu.classList.add("fade-in");
-  },200);
-}
-
-function addItem(name,price){if(!cart[name])cart[name]={qty:0,price}; cart[name].qty++; renderBill(); renderMenu();}
-function addCustomItem(){let n=customName.value,p=Number(customPrice.value); if(!n||p<=0)return; if(!cart[n])cart[n]={qty:0,price:p}; cart[n].qty++; customName.value=""; customPrice.value=""; renderBill();}
-function renderBill(){
-  billItems.innerHTML="";
-  let s=0;
-  for(let n in cart){
-    let i = cart[n];
-    let t = i.qty * i.price;
-    s += t;
-    let tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="item">${n}</td>
-      <td>
-        <button class="bill-qty-btn" onclick="updateQty('${n}',-1)">-</button>
-        ${i.qty}
-        <button class="bill-qty-btn" onclick="updateQty('${n}',1)">+</button>
-      </td>
-      <td>${t}</td>
-    `;
-    billItems.appendChild(tr);
-  }
-  sub.innerText = s;
-  delivery.innerText = deliveryCharge;
-  total.innerText = s + deliveryCharge;
-
-  billCustName.innerText = custName.value || "-";
-  billCustPhone.innerText = custPhone.value || "-";
-  billCustAddress.innerText =billCustAddress.innerText = custAddress.value || "-";  
-  billOrderType.innerText = orderType.value || "-";  
-  billPayment.innerText = paymentMethod.value || "-";  
-  tokenNo.innerText = token;  
-}
-
-function updateQty(name, change){
-  if(cart[name]){
-    cart[name].qty += change;
-    if(cart[name].qty <= 0) delete cart[name];
-    renderBill();
-    renderMenu();
+// ---------------- Bottom Switch ----------------
+function switchBottom(section){
+  if(section==="history"){
+    bottomHistory.classList.add("active");
+    bottomGallery.classList.remove("active");
+    btnHistory.classList.add("active");
+    btnGallery.classList.remove("active");
+  } else {
+    bottomHistory.classList.remove("active");
+    bottomGallery.classList.add("active");
+    btnHistory.classList.remove("active");
+    btnGallery.classList.add("active");
   }
 }
 
-function setDelivery(v,b){
-  deliveryCharge=v;
-  document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");
-  customDelivery.value="";
-  renderBill();
-}
-
-function applyCustomDelivery(){
-  deliveryCharge=Number(customDelivery.value)||0;
-  document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));
-  renderBill();
-}
-
-function applyCustomToken(){
-  let val=Number(customToken.value);
-  if(!isNaN(val)&&val>=0){
-    token=val;
-    localStorage.setItem("token",token);
-    renderBill();
-  }
-}
-
-function printBill(){
-  renderBill();
-  window.print();
-  saveHistory();
-  token++;
-  localStorage.setItem("token",token);
-  clearBill();
-}
-
-function shareWhatsApp(){
-  let msg=`Snacknest Kitchen\nToken #${token}\nCustomer: ${custName.value}\nPhone: ${custPhone.value}\nAddress: ${custAddress.value}\nOrder: ${orderType.value}\nPayment: ${paymentMethod.value}\n\n`; 
-  let s=0;
-  for(let n in cart){let i=cart[n]; s+=i.qty*i.price; msg+=`${n} x ${i.qty} = ${i.qty*i.price}\n`;}
-  msg+=`\nDelivery: ${deliveryCharge}\nTOTAL: ${s+deliveryCharge}\nThank You!`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg));
-}
-
-function clearBill(){
-  cart={};
-  deliveryCharge=0;
-  custName.value="";
-  custPhone.value="";
-  custAddress.value="";
-  customDelivery.value="";
-  renderBill();
-  renderMenu();
-}
-
+// ---------------- History ----------------
 function saveHistory(){
   let h = JSON.parse(localStorage.getItem("history")||"[]");
   h.unshift({
     token: token,
-    customer: custName.value||"-",
+    customer: custName.value || "-",
     total: total.innerText,
     date: new Date().toLocaleString()
   });
@@ -498,14 +413,46 @@ function renderHistory(){
   historyList.innerHTML = h.map(x=>`<p>Token #${x.token} | ${x.customer} | Total: ${x.total} | ${x.date}</p>`).join("");
 }
 
-window.onload = ()=>{
-  renderCategories();
-  renderMenu();
-  updateDateTime();
-  renderBill();
-  renderHistory();
-};
-setInterval(updateDateTime,1000);
+// ---------------- All other functions ----------------
+function renderCategories(){
+  categories.innerHTML="";
+  Object.keys(menuData).forEach(c=>{
+    let b=document.createElement("button");
+    b.innerText=c;
+    if(c===currentCategory)b.classList.add("active");
+    b.onclick=()=>{currentCategory=c; renderCategories(); renderMenu();}
+    categories.appendChild(b);
+  });
+}
+
+function renderMenu(){
+  menu.classList.remove("fade-in"); menu.classList.add("fade-out");
+  setTimeout(()=>{
+    menu.innerHTML="";
+    menuData[currentCategory].forEach((item,index)=>{
+      let q = cart[item[0]]?.qty || 0;
+      let div = document.createElement("div");
+      div.className="menu-item";
+      div.innerHTML=`<span>${item[0]} - PKR ${item[1]}</span>
+      <button onclick="addItem('${item[0]}',${item[1]})">Add ${q ? `<span class="badge">${q}</span>` : ""}</button>`;
+      menu.appendChild(div);
+    });
+    menu.classList.remove("fade-out"); menu.classList.add("fade-in");
+  },200);
+}
+
+function addItem(name,price){if(!cart[name])cart[name]={qty:0,price}; cart[name].qty++; renderBill(); renderMenu();}
+function addCustomItem(){let n=customName.value,p=Number(customPrice.value); if(!n||p<=0)return; if(!cart[n])cart[n]={qty:0,price:p}; cart[n].qty++; customName.value=""; customPrice.value=""; renderBill();}
+function updateQty(name,change){if(cart[name]){cart[name].qty+=change;if(cart[name].qty<=0)delete cart[name]; renderBill(); renderMenu();}}
+function renderBill(){billItems.innerHTML=""; let s=0; for(let n in cart){let i=cart[n]; let t=i.qty*i.price; s+=t; billItems.innerHTML+=`<tr><td class="item">${n}</td><td><button class="bill-qty-btn" onclick="updateQty('${n}',-1)">-</button>${i.qty}<button class="bill-qty-btn" onclick="updateQty('${n}',1)">+</button></td><td>${t}</td></tr>`;} sub.innerText=s; delivery.innerText=deliveryCharge; total.innerText=s+deliveryCharge; billCustName.innerText=custName.value||"-"; billCustPhone.innerText=custPhone.value||"-"; billCustAddress.innerText=custAddress.value||"-"; billOrderType.innerText=orderType.value||"-"; billPayment.innerText=paymentMethod.value||"-"; tokenNo.innerText=token;}
+function setDelivery(v,b){deliveryCharge=v; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); customDelivery.value=""; renderBill();}
+function applyCustomDelivery(){deliveryCharge=Number(customDelivery.value)||0; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); renderBill();}
+function applyCustomToken(){let val=Number(customToken.value); if(!isNaN(val)&&val>=0){token=val; localStorage.setItem("token",token); renderBill();}}
+function printBill(){renderBill(); window.print(); saveHistory(); token++; localStorage.setItem("token",token); clearBill();}
+function shareWhatsApp(){let msg=`Snacknest Kitchen\nToken #${token}\nCustomer: ${custName.value}\nPhone: ${custPhone.value}\nAddress: ${custAddress.value}\nOrder: ${orderType.value}\nPayment: ${paymentMethod.value}\n\n`; let s=0; for(let n in cart){let i=cart[n]; s+=i.qty*i.price; msg+=`${n} x ${i.qty} = ${i.qty*i.price}\n`;} msg+=`\nDelivery: ${deliveryCharge}\nTOTAL: ${s+deliveryCharge}\nThank You!`; window.open("https://wa.me/?text="+encodeURIComponent(msg));}
+function clearBill(){cart={};deliveryCharge=0;custName.value="";custPhone.value="";custAddress.value="";customDelivery.value=""; renderBill(); renderMenu();}
+
+window.onload = ()=>{renderCategories(); renderMenu(); renderBill(); renderHistory(); setInterval(()=>{billDate.innerText=new Date().toLocaleString();},1000);}
 </script>
 
 </body>
