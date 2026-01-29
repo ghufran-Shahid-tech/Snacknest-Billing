@@ -95,27 +95,23 @@ header button:hover{transform: scale(1.05);}
   padding:10px 0;
   border-bottom:1px dashed #ccc;
   font-size:14px;
-  opacity:0;
-  transform: translateX(-30px);
-  animation: slideIn 0.5s forwards;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 .menu-item:hover{
   background: rgba(231,111,0,0.1);
-  transform: translateX(0) scale(1.02);
+  transform: scale(1.02);
 }
 .menu-item button{
   background:var(--primary);
   color:#fff;
   border:none;
-  padding:8px 14px;
-  border-radius:8px;
+  padding:6px 12px;
+  border-radius:6px;
   font-size:13px;
   cursor:pointer;
-  position:relative;
-  transition: transform 0.2s ease, background 0.2s ease;
 }
-.menu-item button:hover{transform: scale(1.05);}
+.menu.fade-out{opacity:0; transform: translateY(10px); transition: all 0.3s ease;}
+.menu.fade-in{opacity:1; transform: translateY(0); transition: all 0.3s ease;}
 .badge{
   position:absolute;
   top:-6px;
@@ -142,25 +138,7 @@ input,select{width:100%;padding:6px;border-radius:6px;border:1px solid #ccc;marg
 button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:4px;}
 .print{background:#111;color:#fff;}
 .clear{background:#ccc;}
-@keyframes slideIn{to{opacity:1; transform: translateX(0);}}
-.menu.fade-out{opacity:0; transform: translateX(-20px); transition: all 0.4s ease;}
-.menu.fade-in{opacity:1; transform: translateX(0); transition: all 0.4s ease;}
-footer{
-  text-align:center;
-  padding:10px;
-  font-size:12px;
-  background: rgba(0,0,0,0.6);
-  color:#fff;
-  position: fixed;
-  width: 100%;
-  bottom:0;
-  left:0;
-  backdrop-filter: blur(10px);
-  border-top-left-radius:12px;
-  border-top-right-radius:12px;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-  z-index: 999;
-}
+.bill-qty-btn{padding:2px 6px; margin:0 2px; border:none; border-radius:4px; background:#e76f00; color:#fff; cursor:pointer;}
 @media(max-width:1024px){.grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:768px){.grid{grid-template-columns:1fr;}}
 @media(max-width:480px){header{flex-direction:column;align-items:flex-start;}}
@@ -326,31 +304,65 @@ function renderCategories(){
 }
 
 function renderMenu(){
-  menu.classList.remove("fade-in"); menu.classList.add("fade-out");
+  menu.classList.remove("fade-in"); 
+  menu.classList.add("fade-out");
   setTimeout(()=>{
     menu.innerHTML="";
     menuData[currentCategory].forEach((item,index)=>{
-      let q=cart[item[0]]?.qty||0;
-      let itemDiv=document.createElement("div");
-      itemDiv.className="menu-item";
-      itemDiv.style.animationDelay = `${index*0.05}s`;
-      itemDiv.innerHTML=`<span>${item[0]} - PKR ${item[1]}</span>
-      <button onclick="addItem('${item[0]}',${item[1]})">Add ${q?`<span class="badge">${q}</span>`:""}</button>`;
+      let q = cart[item[0]]?.qty || 0;
+      let itemDiv = document.createElement("div");
+      itemDiv.className = "menu-item";
+      itemDiv.innerHTML = `<span>${item[0]} - PKR ${item[1]}</span>
+      <button onclick="addItem('${item[0]}',${item[1]})">Add ${q ? `<span class="badge">${q}</span>` : ""}</button>`;
       menu.appendChild(itemDiv);
     });
-    menu.classList.remove("fade-out"); menu.classList.add("fade-in");
+    menu.classList.remove("fade-out"); 
+    menu.classList.add("fade-in");
   },200);
 }
 
 function addItem(name,price){if(!cart[name])cart[name]={qty:0,price}; cart[name].qty++; renderBill(); renderMenu();}
 function addCustomItem(){let n=customName.value,p=Number(customPrice.value); if(!n||p<=0)return; if(!cart[n])cart[n]={qty:0,price:p}; cart[n].qty++; customName.value=""; customPrice.value=""; renderBill();}
 function renderBill(){
-  billItems.innerHTML=""; let s=0;
-  for(let n in cart){let i=cart[n]; let t=i.qty*i.price; s+=t; billItems.innerHTML+=`<tr><td class="item">${n}</td><td>${i.qty}</td><td>${t}</td></tr>`;}
-  sub.innerText=s; delivery.innerText=deliveryCharge; total.innerText=s+deliveryCharge;
-  billCustName.innerText=custName.value||"-"; billCustPhone.innerText=custPhone.value||"-"; billCustAddress.innerText=custAddress.value||"-";
-  billOrderType.innerText=orderType.value||"-"; billPayment.innerText=paymentMethod.value||"-"; tokenNo.innerText=token;
+  billItems.innerHTML="";
+  let s=0;
+  for(let n in cart){
+    let i = cart[n];
+    let t = i.qty * i.price;
+    s += t;
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="item">${n}</td>
+      <td>
+        <button class="bill-qty-btn" onclick="updateQty('${n}',-1)">-</button>
+        ${i.qty}
+        <button class="bill-qty-btn" onclick="updateQty('${n}',1)">+</button>
+      </td>
+      <td>${t}</td>
+    `;
+    billItems.appendChild(tr);
+  }
+  sub.innerText = s;
+  delivery.innerText = deliveryCharge;
+  total.innerText = s + deliveryCharge;
+
+  billCustName.innerText = custName.value || "-";
+  billCustPhone.innerText = custPhone.value || "-";
+  billCustAddress.innerText = custAddress.value || "-";
+  billOrderType.innerText = orderType.value || "-";
+  billPayment.innerText = paymentMethod.value || "-";
+  tokenNo.innerText = token;
 }
+
+function updateQty(item, change){
+  if(cart[item]){
+    cart[item].qty += change;
+    if(cart[item].qty <= 0) delete cart[item];
+    renderBill();
+    renderMenu();
+  }
+}
+
 function setDelivery(v,b){deliveryCharge=v; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); customDelivery.value=""; renderBill();}
 function applyCustomDelivery(){deliveryCharge=Number(customDelivery.value)||0; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); renderBill();}
 function applyCustomToken(){let val=Number(customToken.value); if(!isNaN(val)&&val>=0){token=val; localStorage.setItem("token",token); renderBill();}}
