@@ -3,43 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snacknest Kitchen POS</title>
+<title>Snacknest Kitchen</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --primary:#e76f00;
-  --bg:#f5e0d4;
+  --bg:#f4f6fb;
   --card:#ffffff;
   --text:#111;
 }
 body.dark{
   --bg:#0f1115;
   --card:#1b1f26;
-  --text:#fff;
+  --text:#ffffff;
 }
-*{box-sizing:border-box;}
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Poppins,sans-serif;
+  font-family:Poppins, sans-serif;
   background:var(--bg);
   color:var(--text);
-  opacity:0;
-  animation: fadeIn 0.8s forwards;
 }
-@keyframes fadeIn{to{opacity:1;}}
 header{
-  backdrop-filter: blur(10px);
-  background: rgba(0,0,0,0.6);
-  color:#fff;
+  background:var(--card);
   padding:16px 24px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  box-shadow:0 4px 12px rgba(0,0,0,0.3);
-  border-radius:0 0 16px 16px;
-  flex-wrap:wrap;
+  box-shadow:0 4px 12px rgba(0,0,0,0.06);
 }
-header span{font-size:18px;font-weight:600;}
+header span{font-size:18px;font-weight:600}
 header button{
   background:var(--primary);
   border:none;
@@ -48,81 +41,23 @@ header button{
   border-radius:8px;
   font-weight:600;
   cursor:pointer;
-  transition: transform 0.2s ease;
-  margin-top:8px;
 }
-header button:hover{transform: scale(1.05);}
 .container{max-width:1200px;margin:auto;padding:16px;}
 .grid{
   display:grid;
   grid-template-columns:1.3fr 1fr;
   gap:16px;
-  animation: fadeInUp 0.6s;
 }
-@keyframes fadeInUp{from{opacity:0; transform:translateY(20px);}to{opacity:1; transform:translateY(0);}}
-.card{
-  background:var(--card);
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,.08);
-  max-height:80vh;
-  overflow:auto;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-.category-menu{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  margin-bottom:12px;
-}
-.category-menu button{
-  border:none;
-  padding:8px 16px;
-  border-radius:8px;
-  background:#ddd;
-  font-weight:600;
-  cursor:pointer;
-  transition: all 0.3s;
-}
-.category-menu button.active{
-  background:var(--primary);
-  color:#fff;
-}
-.menu-item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 0;
-  border-bottom:1px dashed #ccc;
-  font-size:14px;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.menu-item:hover{
-  background: rgba(231,111,0,0.1);
-  transform: scale(1.02);
-}
-.menu-item button{
-  background:var(--primary);
-  color:#fff;
-  border:none;
-  padding:6px 12px;
-  border-radius:6px;
-  font-size:13px;
-  cursor:pointer;
-}
-.menu.fade-out{opacity:0; transform: translateY(10px); transition: all 0.3s ease;}
-.menu.fade-in{opacity:1; transform: translateY(0); transition: all 0.3s ease;}
-.badge{
-  position:absolute;
-  top:-6px;
-  right:-6px;
-  background:#111;
-  color:#fff;
-  font-size:10px;
-  padding:2px 6px;
-  border-radius:50%;
-}
-.bill{font-family:Roboto Mono, monospace; width:100%; max-width:400px; margin:auto; padding:10px; border:1px dashed #ccc;}
+.card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 10px 25px rgba(0,0,0,.08);max-height:80vh;overflow:auto;}
+.category-menu{display:flex;gap:10px;overflow-x:auto;margin-bottom:12px;}
+.category-menu button{border:none;padding:8px 16px;border-radius:8px;background:#ddd;font-weight:600;cursor:pointer;}
+.category-menu button.active{background:var(--primary);color:#fff;}
+.menu-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed #ccc;font-size:14px;}
+.menu-item button{background:var(--primary);color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;position:relative;}
+.badge{position:absolute;top:-6px;right:-6px;background:#111;color:#fff;font-size:10px;padding:2px 6px;border-radius:50%;}
+
+/* BILL STYLING */
+.bill{font-family:Roboto Mono, monospace; width:320px; margin:auto; padding:10px; border:1px dashed #ccc;}
 .bill-header{text-align:center; margin-bottom:5px;}
 .bill-header img{width:200px; display:block; margin:0 auto 5px auto;}
 #billInfo{text-align:center;font-size:12px; margin-bottom:5px;}
@@ -136,99 +71,31 @@ header button:hover{transform: scale(1.05);}
 .section{margin-top:10px;}
 input,select{width:100%;padding:6px;border-radius:6px;border:1px solid #ccc;margin-bottom:4px;font-size:12px;}
 button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:600;cursor:pointer;margin-top:4px;}
-.print{background:#111;color:#fff;}
-.clear{background:#ccc;}
-.bill-qty-btn{padding:2px 6px; margin:0 2px; border:none; border-radius:4px; background:#e76f00; color:#fff; cursor:pointer;}
+.print{background:#111;color:#fff}
+.clear{background:#ccc}
 
-/* Bottom switch section */
-.bottom-section{
-  margin-top:20px;
-}
-.bottom-switch-buttons{
-  display:flex;
-  gap:10px;
-  margin-bottom:12px;
-}
-.bottom-switch-buttons button{
-  flex:1;
-  border:none;
-  padding:8px;
-  border-radius:8px;
-  background:#ddd;
-  font-weight:600;
-  cursor:pointer;
-  transition: all 0.3s;
-}
-.bottom-switch-buttons button.active{
-  background:var(--primary);
-  color:#fff;
-}
-.bottom-cards{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-}
-.bottom-card{
-  background:var(--card);
-  border-radius:16px;
-  padding:16px;
-  max-height:250px;
-  overflow:auto;
-  opacity:0;
-  transition: opacity 0.3s ease;
-}
-.bottom-card.active{
-  opacity:1;
-}
-.image-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-.image-grid img{
-  width:100%;
-  border-radius:8px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
-}
-@media(max-width:768px){
-  .grid{grid-template-columns:1fr;}
-  .bottom-cards{grid-template-columns:1fr;}
-  .image-grid{grid-template-columns:1fr 1fr;}
-}
-footer{
-  text-align:center;
-  padding:12px 16px;
-  font-size:12px;
-  background: rgba(0,0,0,0.6);
-  color:#fff;
-  position:relative;
-  width: 100%;
-  backdrop-filter: blur(10px);
-  border-top-left-radius:12px;
-  border-top-right-radius:12px;
-  margin-top:20px;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+/* PRINT */
+@media print{
+  header,.menu,.section,button,input,select{display:none!important}
+  .bill{width:80mm;margin:auto;box-shadow:none;text-align:center;}
+  td,th{text-align:center;}
+  td.item{text-align:left;}
 }
 </style>
 </head>
 <body>
-
 <header>
-  <span>Snacknest Kitchen POS</span>
+  <span>Kitchen POS</span>
   <button onclick="toggleTheme()">Toggle Theme</button>
 </header>
-
 <div class="container">
 <div class="grid">
-
-<!-- Menu Card -->
-<div class="card menu" id="menuCard">
+<div class="card menu">
   <h3>Menu</h3>
   <div class="category-menu" id="categories"></div>
   <div id="menu"></div>
 </div>
 
-<!-- Bill Card -->
 <div class="card bill">
   <div class="bill-header">
     <img src="logo.png" alt="Logo">
@@ -259,14 +126,10 @@ footer{
     </select>
   </div>
 
-  <div class="section">
-    <h4>Token Number</h4>
-    <input type="number" id="customToken" placeholder="Enter token number (optional)">
-    <button class="action" onclick="applyCustomToken()">Set Token</button>
-  </div>
-
   <table>
-    <thead><tr><th>Item</th><th>Qty</th><th>Amount</th></tr></thead>
+    <thead>
+      <tr><th>Item</th><th>Qty</th><th>Amount</th></tr>
+    </thead>
     <tbody id="billItems"></tbody>
     <tfoot>
       <tr><td colspan="2">Subtotal</td><td id="sub">0</td></tr>
@@ -304,41 +167,11 @@ footer{
   <button class="action print" onclick="shareWhatsApp()">WhatsApp</button>
   <button class="action clear" onclick="clearBill()">Clear</button>
 </div>
-
-<!-- Bottom section switch -->
-<div class="bottom-section">
-  <div class="bottom-switch-buttons">
-    <button id="btnHistory" class="active" onclick="switchBottom('history')">History</button>
-    <button id="btnGallery" onclick="switchBottom('gallery')">Gallery</button>
-  </div>
-  <div class="bottom-cards">
-    <div id="bottomHistory" class="bottom-card active">
-      <h4>History</h4>
-      <div id="historyList" style="max-height:200px; overflow:auto;">
-        <p>No orders yet</p>
-      </div>
-    </div>
-    <div id="bottomGallery" class="bottom-card">
-      <h4>Gallery</h4>
-      <div class="image-grid">
-        <img src="png1" alt="png1">
-        <img src="png2" alt="png2">
-        <img src="png3" alt="png3">
-        <img src="png4" alt="png4">
-        <img src="png5" alt="png5">
-        <img src="png6" alt="png6">
-      </div>
-    </div>
-  </div>
-</div>
-
 </div>
 </div>
-
-<footer>Powered by <b>Ghufran Tech</b></footer>
 
 <script>
-// ---------------- Variables ----------------
+// INPUTS
 const custName = document.getElementById("custName");
 const custPhone = document.getElementById("custPhone");
 const custAddress = document.getElementById("custAddress");
@@ -347,7 +180,8 @@ const paymentMethod = document.getElementById("paymentMethod");
 const customName = document.getElementById("customName");
 const customPrice = document.getElementById("customPrice");
 const customDelivery = document.getElementById("customDelivery");
-const customToken = document.getElementById("customToken");
+
+// BILL DISPLAY
 const billCustName = document.getElementById("billCustName");
 const billCustPhone = document.getElementById("billCustPhone");
 const billCustAddress = document.getElementById("billCustAddress");
@@ -359,16 +193,11 @@ const sub = document.getElementById("sub");
 const delivery = document.getElementById("delivery");
 const total = document.getElementById("total");
 const tokenNo = document.getElementById("tokenNo");
-const menu = document.getElementById("menu");
-const categories = document.getElementById("categories");
-const historyList = document.getElementById("historyList");
-const bottomHistory = document.getElementById("bottomHistory");
-const bottomGallery = document.getElementById("bottomGallery");
-const btnHistory = document.getElementById("btnHistory");
-const btnGallery = document.getElementById("btnGallery");
 
-let token = Number(localStorage.getItem("token")) || 0;
+let token = Number(localStorage.getItem("token")) || 1;
 let cart = {}, deliveryCharge = 0;
+
+// FULL MENU
 let menuData={
 "Rice & Pasta":[["Fried Rice Veg",200],["Fried Rice Chicken",250],["Chilli Chicken",250],["Chow Mein",250],["Alfredo",350],["Lasagne",500]],
 "Burgers":[["Bun Kabab",100],["Anday Wala Burger",150],["Zinger Breast",300],["Zinger Breast Cheese",350],["Zinger Thigh",350],["Zinger Thigh Cheese",400]],
@@ -376,84 +205,53 @@ let menuData={
 "Pizzas":[["Chicken Fajita Small",350],["Chicken Fajita Medium",750],["Chicken Fajita Large",1050],["Chicken Tikka Small",350],["Chicken Tikka Medium",750],["Chicken Tikka Large",1050],["Afghani Small",350],["Afghani Medium",750],["Afghani Large",1050],["Creamy Tikka Small",350],["Creamy Tikka Medium",750],["Creamy Tikka Large",1050],["Chef Special Small",350],["Chef Special Medium",750],["Chef Special Large",1050]],
 "Drinks":[["1.5L Next Cola",220],["1.5L Fizup Next",220],["500ml Next Cola",100],["500ml Fizup Next",100]]
 };
-let currentCategory = Object.keys(menuData)[0];
 
-// ---------------- Bottom Switch ----------------
-function switchBottom(section){
-  if(section==="history"){
-    bottomHistory.classList.add("active");
-    bottomGallery.classList.remove("active");
-    btnHistory.classList.add("active");
-    btnGallery.classList.remove("active");
-  } else {
-    bottomHistory.classList.remove("active");
-    bottomGallery.classList.add("active");
-    btnHistory.classList.remove("active");
-    btnGallery.classList.add("active");
-  }
-}
+let currentCategory=Object.keys(menuData)[0];
 
-// ---------------- History ----------------
-function saveHistory(){
-  let h = JSON.parse(localStorage.getItem("history")||"[]");
-  h.unshift({
-    token: token,
-    customer: custName.value || "-",
-    total: total.innerText,
-    date: new Date().toLocaleString()
-  });
-  if(h.length>10) h.pop();
-  localStorage.setItem("history",JSON.stringify(h));
-  renderHistory();
-}
+function updateDateTime(){billDate.innerText=new Date().toLocaleString();}
+setInterval(updateDateTime,1000);
 
-function renderHistory(){
-  let h = JSON.parse(localStorage.getItem("history")||"[]");
-  if(h.length===0){historyList.innerHTML="<p>No orders yet</p>"; return;}
-  historyList.innerHTML = h.map(x=>`<p>Token #${x.token} | ${x.customer} | Total: ${x.total} | ${x.date}</p>`).join("");
-}
-
-// ---------------- All other functions ----------------
 function renderCategories(){
   categories.innerHTML="";
   Object.keys(menuData).forEach(c=>{
     let b=document.createElement("button");
     b.innerText=c;
     if(c===currentCategory)b.classList.add("active");
-    b.onclick=()=>{currentCategory=c; renderCategories(); renderMenu();}
+    b.onclick=()=>{currentCategory=c;renderMenu();renderCategories();}
     categories.appendChild(b);
   });
 }
+renderCategories();
 
 function renderMenu(){
-  menu.classList.remove("fade-in"); menu.classList.add("fade-out");
-  setTimeout(()=>{
-    menu.innerHTML="";
-    menuData[currentCategory].forEach((item,index)=>{
-      let q = cart[item[0]]?.qty || 0;
-      let div = document.createElement("div");
-      div.className="menu-item";
-      div.innerHTML=`<span>${item[0]} - PKR ${item[1]}</span>
-      <button onclick="addItem('${item[0]}',${item[1]})">Add ${q ? `<span class="badge">${q}</span>` : ""}</button>`;
-      menu.appendChild(div);
-    });
-    menu.classList.remove("fade-out"); menu.classList.add("fade-in");
-  },200);
+  menu.innerHTML="";
+  menuData[currentCategory].forEach(i=>{
+    let q=cart[i[0]]?.qty||0;
+    menu.innerHTML+=`<div class="menu-item"><span>${i[0]} - PKR ${i[1]}</span><button onclick="addItem('${i[0]}',${i[1]})">Add ${q?`<span class="badge">${q}</span>`:""}</button></div>`;
+  });
 }
 
-function addItem(name,price){if(!cart[name])cart[name]={qty:0,price}; cart[name].qty++; renderBill(); renderMenu();}
-function addCustomItem(){let n=customName.value,p=Number(customPrice.value); if(!n||p<=0)return; if(!cart[n])cart[n]={qty:0,price:p}; cart[n].qty++; customName.value=""; customPrice.value=""; renderBill();}
-function updateQty(name,change){if(cart[name]){cart[name].qty+=change;if(cart[name].qty<=0)delete cart[name]; renderBill(); renderMenu();}}
-function renderBill(){billItems.innerHTML=""; let s=0; for(let n in cart){let i=cart[n]; let t=i.qty*i.price; s+=t; billItems.innerHTML+=`<tr><td class="item">${n}</td><td><button class="bill-qty-btn" onclick="updateQty('${n}',-1)">-</button>${i.qty}<button class="bill-qty-btn" onclick="updateQty('${n}',1)">+</button></td><td>${t}</td></tr>`;} sub.innerText=s; delivery.innerText=deliveryCharge; total.innerText=s+deliveryCharge; billCustName.innerText=custName.value||"-"; billCustPhone.innerText=custPhone.value||"-"; billCustAddress.innerText=custAddress.value||"-"; billOrderType.innerText=orderType.value||"-"; billPayment.innerText=paymentMethod.value||"-"; tokenNo.innerText=token;}
-function setDelivery(v,b){deliveryCharge=v; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); b.classList.add("active"); customDelivery.value=""; renderBill();}
-function applyCustomDelivery(){deliveryCharge=Number(customDelivery.value)||0; document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active")); renderBill();}
-function applyCustomToken(){let val=Number(customToken.value); if(!isNaN(val)&&val>=0){token=val; localStorage.setItem("token",token); renderBill();}}
-function printBill(){renderBill(); window.print(); saveHistory(); token++; localStorage.setItem("token",token); clearBill();}
-function shareWhatsApp(){let msg=`Snacknest Kitchen\nToken #${token}\nCustomer: ${custName.value}\nPhone: ${custPhone.value}\nAddress: ${custAddress.value}\nOrder: ${orderType.value}\nPayment: ${paymentMethod.value}\n\n`; let s=0; for(let n in cart){let i=cart[n]; s+=i.qty*i.price; msg+=`${n} x ${i.qty} = ${i.qty*i.price}\n`;} msg+=`\nDelivery: ${deliveryCharge}\nTOTAL: ${s+deliveryCharge}\nThank You!`; window.open("https://wa.me/?text="+encodeURIComponent(msg));}
-function clearBill(){cart={};deliveryCharge=0;custName.value="";custPhone.value="";custAddress.value="";customDelivery.value=""; renderBill(); renderMenu();}
+function addItem(n,p){if(!cart[n])cart[n]={qty:0,price:p};cart[n].qty++;renderBill();renderMenu();}
+function addCustomItem(){let n=customName.value,p=Number(customPrice.value);if(!n||p<=0)return;if(!cart[n])cart[n]={qty:0,price:p};cart[n].qty++;customName.value="";customPrice.value="";renderBill();}
 
-window.onload = ()=>{renderCategories(); renderMenu(); renderBill(); renderHistory(); setInterval(()=>{billDate.innerText=new Date().toLocaleString();},1000);}
+function renderBill(){
+  billItems.innerHTML="";let s=0;
+  for(let n in cart){let i=cart[n],t=i.qty*i.price;s+=t;billItems.innerHTML+=`<tr><td class="item">${n}</td><td>${i.qty}</td><td>${t}</td></tr>`;}
+  sub.innerText=s;delivery.innerText=deliveryCharge;total.innerText=s+deliveryCharge;
+  billCustName.innerText = custName.value || "-";
+  billCustPhone.innerText = custPhone.value || "-";
+  billCustAddress.innerText = custAddress.value || "-";
+  billOrderType.innerText = orderType.value || "-";
+  billPayment.innerText = paymentMethod.value || "-";
+  tokenNo.innerText = token;
+}
+
+function setDelivery(v,b){deliveryCharge=v;document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));b.classList.add("active");customDelivery.value="";renderBill();}
+function applyCustomDelivery(){deliveryCharge=Number(customDelivery.value)||0;document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));renderBill();}
+function printBill(){window.print();token++;localStorage.setItem("token",token);clearBill();}
+function shareWhatsApp(){let msg=`Snacknest Kitchen\nToken #${token}\n${custName.value}\n${custPhone.value}\n${custAddress.value}\nOrder: ${orderType.value}\nPayment: ${paymentMethod.value}\n\n`;let s=0;for(let n in cart){let i=cart[n];s+=i.qty*i.price;msg+=`${n} x ${i.qty} = ${i.qty*i.price}\n`; } msg+=`\nDelivery: ${deliveryCharge}\nTOTAL: ${s+deliveryCharge}\nThank You!`;window.open("https://wa.me/?text="+encodeURIComponent(msg));}
+function clearBill(){cart={};deliveryCharge=0;custName.value="";custPhone.value="";custAddress.value="";customDelivery.value="";customName.value="";customPrice.value="";document.querySelectorAll(".delivery-btns button").forEach(x=>x.classList.remove("active"));renderBill();renderMenu();}
+function toggleTheme(){document.body.classList.toggle("dark");}
 </script>
-
 </body>
 </html>
