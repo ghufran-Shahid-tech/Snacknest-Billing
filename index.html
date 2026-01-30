@@ -139,10 +139,40 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
 .print{background:#111;color:#fff;}
 .clear{background:#ccc;}
 .bill-qty-btn{padding:2px 6px; margin:0 2px; border:none; border-radius:4px; background:#e76f00; color:#fff; cursor:pointer;}
+
+/* New Gallery Section CSS */
+.gallery-section {
+  margin-top: 20px;
+  background: var(--card);
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.gallery-grid img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  margin-top: 20px;
+}
+
 @media(max-width:1024px){.grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:768px){.grid{grid-template-columns:1fr;}}
 @media(max-width:480px){header{flex-direction:column;align-items:flex-start;}}
-@media print{header,.menu,.section,button,input,select,footer{display:none!important;}.bill{width:80mm;margin:auto;box-shadow:none;text-align:center;}td,th{text-align:center;}td.item{text-align:left;}}
+@media print{header,.menu,.section,button,input,select,footer,.gallery-section{display:none!important;}.bill{width:80mm;margin:auto;box-shadow:none;text-align:center;}td,th{text-align:center;}td.item{text-align:left;}}
 </style>
 </head>
 <body>
@@ -237,6 +267,19 @@ button.action{width:100%;padding:10px;border:none;border-radius:8px;font-weight:
   <button class="action clear" onclick="clearBill()">Clear</button>
 </div>
 </div>
+
+<div class="gallery-section">
+  <h3>Gallery</h3>
+  <div class="gallery-grid">
+    <img src="png1.png" alt="Image 1">
+    <img src="png2.png" alt="Image 2">
+    <img src="png3.png" alt="Image 3">
+    <img src="png4.png" alt="Image 4">
+    <img src="png5.png" alt="Image 5">
+    <img src="png6.png" alt="Image 6">
+  </div>
+</div>
+
 </div>
 
 <footer>Powered by <b>Ghufran Tech</b></footer>
